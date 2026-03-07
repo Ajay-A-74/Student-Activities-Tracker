@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyVerse 🎓</title>
+  <meta name="description" content="Gamified student productivity tracker with XP, achievements, pomodoro, flashcards & more">
+  <meta name="theme-color" content="#04060F">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- AMBIENT -->
+<div class="amb">
+  <div class="ao"></div><div class="ao"></div><div class="ao"></div><div class="ao"></div>
+</div>
+
+<!-- ONBOARDING -->
+<div id="ob">
+  <div class="ob-bg"></div>
+  <div class="ob-em">🎓</div>
+  <div class="ob-wm">StudyVerse</div>
+  <div class="ob-tag">· Your Academic Universe ·</div>
+  <div class="ob-form">
+    <div class="ob-label">Your name</div>
+    <input class="ob-inp" id="nm" placeholder="Enter your name…" maxlength="30" autocomplete="off" aria-label="Your name">
+    <div class="ob-label" style="margin-top:8px">Grade / Year</div>
+    <select class="ob-inp" id="ob-grade" aria-label="Grade or year">
+      <option value="">Select grade…</option>
+      <option value="Year 7">Year 7</option><option value="Year 8">Year 8</option>
+      <option value="Year 9">Year 9</option><option value="Year 10">Year 10</option>
+      <option value="Year 11">Year 11</option><option value="Year 12">Year 12</option>
+      <option value="Year 13 / A-Level">Year 13 / A-Level</option>
+      <option value="Undergraduate Y1">Undergraduate Y1</option>
+      <option value="Undergraduate Y2">Undergraduate Y2</option>
+      <option value="Undergraduate Y3">Undergraduate Y3</option>
+      <option value="Postgraduate">Postgraduate</option>
+      <option value="Other">Other</option>
+    </select>
+    <div class="ob-label" style="margin-top:8px">Your subjects (tap to select)</div>
+    <div class="ob-sub-grid">
+      <div class="ob-sub-btn" data-sub="Math" onclick="toggleObSub(this)">➕ Math</div>
+      <div class="ob-sub-btn" data-sub="Science" onclick="toggleObSub(this)">🔬 Science</div>
+      <div class="ob-sub-btn" data-sub="English" onclick="toggleObSub(this)">📖 English</div>
+      <div class="ob-sub-btn" data-sub="History" onclick="toggleObSub(this)">🏛️ History</div>
+      <div class="ob-sub-btn" data-sub="Art" onclick="toggleObSub(this)">🎨 Art</div>
+      <div class="ob-sub-btn" data-sub="CS" onclick="toggleObSub(this)">💻 CS</div>
+      <div class="ob-sub-btn" data-sub="Other" onclick="toggleObSub(this)">📚 Other</div>
+    </div>
+    <button class="ob-btn" onclick="boot()">Begin Your Journey ✦</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- NAVBAR -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-logo">✦ StudyVerse</div>
+    <div class="nav-tabs">
+      <button class="ntab active" data-page="dashboard" onclick="goPage('dashboard',this)" aria-label="Dashboard">🏠 Dashboard</button>
+      <button class="ntab" data-page="tasks" onclick="goPage('tasks',this)" aria-label="Tasks">📌 Tasks</button>
+      <button class="ntab" data-page="focus" onclick="goPage('focus',this)" aria-label="Focus">🍅 Focus</button>
+      <button class="ntab" data-page="flashcards" onclick="goPage('flashcards',this)" aria-label="Flashcards">🃏 Cards</button>
+      <button class="ntab" data-page="grades" onclick="goPage('grades',this)" aria-label="Grades">📊 Grades</button>
+      <button class="ntab" data-page="stats" onclick="goPage('stats',this)" aria-label="Statistics">📈 Stats</button>
+      <button class="ntab" data-page="friends" onclick="goPage('friends',this)" aria-label="Friends">👥 Social</button>
+      <button class="ntab" data-page="notes" onclick="goPage('notes',this)" aria-label="Notes">📝 Notes</button>
+      <button class="ntab" data-page="timetable" onclick="goPage('timetable',this)" aria-label="Timetable">📅 Schedule</button>
+    </div>
+    <div class="nav-r">
+      <span id="mult-badge">⚡1×</span>
+      <div class="save-ind" id="save-ind" aria-live="polite">✦ Saved</div>
+      <div class="npill p-str">🔥 <span id="nstr">0</span></div>
+      <div class="npill p-xp">⚡ <span id="nxp">0</span></div>
+      <button id="theme-btn" class="btn btl bsm" onclick="toggleTheme()" aria-label="Toggle theme">☀️ Light</button>
+      <button class="btn btl bsm" onclick="openSettings()" aria-label="Open settings" title="Settings (?)">⚙️</button>
+      <div class="nav-av" id="nav" onclick="openProfile()" role="button" aria-label="Open profile" tabindex="0">?</div>
+    </div>
+  </nav>
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="mob-nav" aria-label="Mobile navigation">
+    <div class="mob-tabs" style="overflow-x:auto;justify-content:flex-start;gap:0;padding:0 4px;-webkit-overflow-scrolling:touch;scrollbar-width:none">
+      <button class="mob-tab active" data-page="dashboard" onclick="goPage('dashboard',this)">
+        <div class="mob-tab-icon">🏠</div>Home
+      </button>
+      <button class="mob-tab" data-page="tasks" onclick="goPage('tasks',this)">
+        <div class="mob-tab-icon">📌</div>Tasks
+      </button>
+      <button class="mob-tab" data-page="focus" onclick="goPage('focus',this)">
+        <div class="mob-tab-icon">🍅</div>Focus
+      </button>
+      <button class="mob-tab" data-page="flashcards" onclick="goPage('flashcards',this)">
+        <div class="mob-tab-icon">🃏</div>Cards
+      </button>
+      <button class="mob-tab" data-page="grades" onclick="goPage('grades',this)">
+        <div class="mob-tab-icon">📊</div>Grades
+      </button>
+      <button class="mob-tab" data-page="stats" onclick="goPage('stats',this)">
+        <div class="mob-tab-icon">📈</div>Stats
+      </button>
+      <button class="mob-tab" data-page="friends" onclick="goPage('friends',this)">
+        <div class="mob-tab-icon">👥</div>Social
+      </button>
+      <button class="mob-tab" data-page="notes" onclick="goPage('notes',this)">
+        <div class="mob-tab-icon">📝</div>Notes
+      </button>
+      <button class="mob-tab" data-page="timetable" onclick="goPage('timetable',this)">
+        <div class="mob-tab-icon">📅</div>Schedule
+      </button>
+      <button class="mob-tab" onclick="openSettings()">
+        <div class="mob-tab-icon">⚙️</div>More
+      </button>
+    </div>
+  </nav>
+
+  <!-- TOASTS & CONFETTI -->
+  <div id="pwa-bar" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:300;background:rgba(7,10,24,.97);border:1px solid rgba(167,139,250,.3);border-radius:16px;padding:12px 20px;gap:12px;align-items:center;backdrop-filter:blur(20px);box-shadow:0 8px 30px rgba(0,0,0,.5);font-size:13px;color:var(--text2)">📲 Install StudyVerse as an app! <button class="btn bgh bsm" onclick="installPWA()">Install</button> <button class="btl btn bsm" onclick="dismissPWA()">✕</button></div>
+  <div id="toasts" role="status" aria-live="polite"></div>
+
+  <!-- ══════════════ DASHBOARD ══════════════ -->
+  <main class="page active" id="page-dashboard" role="main" aria-label="Dashboard">
+    <div class="hero">
+      <div class="hero-glow"></div>
+      <div class="hname">Welcome back, <span id="hname">Scholar</span> 👋</div>
+      <div class="hq" id="hq"></div>
+      <div class="hstats">
+        <div class="hstat"><div class="hstat-v" id="hdone">0</div><div class="hstat-l">Done Today</div></div>
+        <div class="hstat"><div class="hstat-v" id="hstr">0</div><div class="hstat-l">Day Streak</div></div>
+        <div class="hstat"><div class="hstat-v" id="hlvl">1</div><div class="hstat-l">Level</div></div>
+        <div class="hstat"><div class="hstat-v" id="hhrs">0m</div><div class="hstat-l">Study Time</div></div>
+      </div>
+      <div class="hero-btns">
+        <button class="btn bgh" onclick="openDND()" aria-label="Enter focus mode">🌙 Focus Mode</button>
+        <button class="btn btl" onclick="goPage('tasks',document.querySelector('.ntab[data-page=tasks]'))">+ Add Task</button>
+        <button class="btn btl" onclick="goPage('flashcards',document.querySelector('.ntab[data-page=flashcards]'))">🃏 Flashcards</button>
+      </div>
+    </div>
+
+    <div class="g2" style="margin-bottom:22px">
+      <!-- XP / Level -->
+      <div class="gc gcp">
+        <div class="gct"><em>⚡</em> LEVEL PROGRESS</div>
+        <div class="lbar-wrap">
+          <div class="lbar-head">
+            <div>
+              <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text" id="lbnum">Lv 1</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px" id="lbtit">Novice Scholar</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:var(--text3);font-family:'Fira Code',monospace" id="lbxpf">0/110 XP</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px" id="lbsub">Keep going!</div>
+            </div>
+          </div>
+          <div class="lbar-bg"><div class="lbar-fg" id="xpf" style="width:0%"></div></div>
+          <div style="font-size:11px;color:var(--text3);text-align:center;font-family:'Fira Code',monospace" id="xpnote"></div>
+        </div>
+      </div>
+      <!-- Daily Goals -->
+      <div class="gc gcp">
+        <div class="gct"><em>🎯</em> DAILY GOALS</div>
+        <div class="dg-bar-wrap">
+          <div class="dg-item">
+            <div class="dg-label">Tasks done</div>
+            <div class="dg-track"><div class="dg-fill" id="dg-tasks-bar" style="width:0%"></div></div>
+            <div class="dg-val" id="dg-tasks-v">0/5</div>
+          </div>
+          <div class="dg-item">
+            <div class="dg-label">XP earned</div>
+            <div class="dg-track"><div class="dg-fill" id="dg-xp-bar" style="width:0%" style="background:linear-gradient(90deg,var(--violet),#C4B5FD)"></div></div>
+            <div class="dg-val" id="dg-xp-v">0/50</div>
+          </div>
+          <div class="dg-item">
+            <div class="dg-label">Study time</div>
+            <div class="dg-track"><div class="dg-fill" id="dg-study-bar" style="width:0%;background:linear-gradient(90deg,var(--teal),#5EEAD4)"></div></div>
+            <div class="dg-val" id="dg-study-v">0/60m</div>
+          </div>
+        </div>
+        <button class="btn btl bsm" style="margin-top:12px" onclick="document.getElementById('dg-set-ov').classList.toggle('open')">⚙ Set Goals</button>
+      </div>
+    </div>
+
+    <div class="g3" style="margin-bottom:22px">
+      <div class="sc"><div class="scv" id="scdone">0</div><div class="scl">Tasks Done</div></div>
+      <div class="sc"><div class="scv" id="scpend">0</div><div class="scl">Pending</div></div>
+      <div class="sc"><div class="scv" id="scstr">0</div><div class="scl">Day Streak 🔥</div></div>
+    </div>
+
+    <!-- Focus Goal -->
+    <div class="gc gcp" style="margin-bottom:22px">
+      <div class="gct"><em>🎯</em> TODAY'S INTENTION</div>
+      <div id="fg-display" class="fg-display placeholder" onclick="editFocusGoal()">Click to set your intention for today…</div>
+      <input id="fg-inp" class="fg-inp fi" placeholder="What will you accomplish today?" onblur="saveFocusGoal()" onkeydown="if(event.key==='Enter')saveFocusGoal()">
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button id="fg-done-btn" class="btn bgo bsm" onclick="completeFocusGoal()" style="display:none">✓ Mark Done</button>
+      </div>
+    </div>
+
+    <div class="g2" style="margin-bottom:22px">
+      <!-- Upcoming tasks -->
+      <div class="gc gcp">
+        <div class="gct"><em>📌</em> UPCOMING TASKS</div>
+        <div id="dashtasks"></div>
+        <div id="next-due-task" style="margin-bottom:10px"></div>
+        <button class="btn btl bsm" style="margin-top:12px;width:100%" onclick="goPage('tasks',document.querySelector('.ntab[data-page=tasks]'))">View All Tasks →</button>
+      </div>
+      <!-- Subject breakdown -->
+      <div class="gc gcp">
+        <div class="gct"><em>🏷️</em> SUBJECTS</div>
+        <div id="sub-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"></div>
+        <div class="wsumm">
+          <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);font-weight:700;margin-bottom:8px">7-DAY ACTIVITY</div>
+          <div class="wsumm-row">
+            <div class="wsumm-item"><div class="wsumm-v" id="ws-wtasks">0</div><div class="wsumm-l">Tasks</div></div>
+            <div class="wsumm-item"><div class="wsumm-v" id="ws-wxp">0</div><div class="wsumm-l">XP</div></div>
+            <div class="wsumm-item"><div class="wsumm-v" id="ws-wtime">0m</div><div class="wsumm-l">Study</div></div>
+          </div>
+        </div>
+        <div class="xp-chart" id="xp-chart-bars" style="margin-top:16px"></div>
+      </div>
+    </div>
+
+    <!-- Streak Calendar -->
+    <div class="gc gcp" style="margin-bottom:22px">
+      <div class="gct"><em>📆</em> 28-DAY STREAK CALENDAR</div>
+      <div class="stgrid" id="stgrid" aria-label="Streak calendar"></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:14px;padding:10px 14px;background:rgba(45,212,191,.04);border:1px solid rgba(45,212,191,.15);border-radius:10px">
+        <div style="font-size:22px">🧊</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--teal)">Streak Freeze</div>
+        <div style="font-size:11px;color:var(--text3)">Protects your streak for 1 missed day · 50 XP</div></div>
+        <div style="text-align:right"><div style="font-size:18px;font-weight:700;color:var(--teal)" id="freeze-count">0</div><div style="font-size:10px;color:var(--text3)">owned</div></div>
+        <button class="btn bsm" style="background:rgba(45,212,191,.1);color:var(--teal);border-color:rgba(45,212,191,.3)" onclick="buyStreakFreeze()">Buy</button>
+      </div>
+    </div>
+
+    <!-- Reward panel -->
+    <div class="gc gcp" style="margin-bottom:22px;background:linear-gradient(135deg,rgba(232,201,122,.07),rgba(232,201,122,.02));border-color:rgba(232,201,122,.15)">
+      <div class="gct"><em>🏆</em> YOUR PROGRESS</div>
+      <div class="g4">
+        <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text" id="rwxp">0</div><div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-top:3px">Total XP</div></div>
+        <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--violet)" id="rwlvl">1</div><div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-top:3px">Level</div></div>
+        <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--teal)" id="rwdone">0</div><div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-top:3px">Completed</div></div>
+        <div style="text-align:center"><div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--rose)" id="rwstr">0</div><div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-top:3px">Best Streak</div></div>
+      </div>
+    </div>
+
+    <!-- XP Multipliers -->
+    <div class="gc gcp" style="margin-bottom:22px">
+      <div class="gct"><em>⚡</em> XP MULTIPLIERS &amp; BONUSES</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btl bsm" onclick="activateMult(1.5,30)">⚡ 1.5× for 30min</button>
+        <button class="btn btl bsm" onclick="activateMult(2,15)">🚀 2× for 15min</button>
+        <button class="btn btl bsm" onclick="checkEarlyBird()">🌅 Early Bird Bonus</button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">Early bird bonus (2× XP) activates automatically between 5am–8am.</div>
+    </div>
+
+    <!-- Session Log -->
+    <div class="gc gcp">
+      <div class="gct"><em>📋</em> RECENT SESSIONS</div>
+      <div id="session-log-list"></div>
+    </div>
+  </main>
+
+  <!-- ══════════════ TASKS ══════════════ -->
+  <main class="page" id="page-tasks" aria-label="Tasks">
+    <div class="gc gcp" style="margin-bottom:22px">
+      <div class="gct"><em>➕</em> ADD NEW TASK</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <input class="fi" id="tname" placeholder="Task name…" aria-label="Task name" onkeydown="if(event.key==='Enter')addTask()">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <select class="fs" id="tsub" aria-label="Subject">
+            <option>Math</option><option>Science</option><option>English</option>
+            <option>History</option><option>Art</option><option>CS</option><option>Other</option>
+          </select>
+          <select class="fs" id="tpri" aria-label="Priority">
+            <option value="med">🟡 Medium</option>
+            <option value="high">🔴 High</option>
+            <option value="low">🟢 Low</option>
+          </select>
+          <select class="fs" id="trecur" aria-label="Recurring">
+            <option value="none">No repeat</option>
+            <option value="daily">🔁 Daily</option>
+            <option value="weekly">🔁 Weekly</option>
+            <option value="monthly">🔁 Monthly</option>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+          <div>
+            <div style="font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">Duration</div>
+            <div class="dur-row">
+              <input class="fi" id="thr" type="number" min="0" placeholder="h" aria-label="Hours">
+              <input class="fi" id="tmn" type="number" min="0" max="59" placeholder="m" aria-label="Minutes">
+              <input class="fi" id="tsc" type="number" min="0" max="59" placeholder="s" aria-label="Seconds">
+            </div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">Due Date</div>
+            <input class="fi" id="tdue" type="date" aria-label="Due date">
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">Tag</div>
+            <select class="fs" id="ttag" aria-label="Tag">
+              <option value="">No tag</option>
+              <option value="urgent">🔥 urgent</option>
+              <option value="revision">📖 revision</option>
+              <option value="exam">📝 exam</option>
+              <option value="homework">📚 homework</option>
+              <option value="project">🛠️ project</option>
+            </select>
+          </div>
+        </div>
+        <input class="fi" id="tnotes" placeholder="Notes (optional)…" aria-label="Task notes">
+        <button class="btn bgh" onclick="addTask()" style="width:100%">+ Add Task</button>
+      </div>
+    </div>
+
+    <!-- Bulk action bar -->
+    <div class="bulk-bar" id="bulk-bar" role="toolbar" aria-label="Bulk actions">
+      <span id="bulk-cnt" style="font-size:12px;color:var(--text2)">0 selected</span>
+      <button class="btn bgo bsm" onclick="bulkComplete()">✓ Complete All</button>
+      <button class="btn bsm" style="background:rgba(251,113,133,.1);color:var(--rose);border-color:rgba(251,113,133,.2)" onclick="bulkDelete()">🗑 Delete</button>
+      <button class="btn btl bsm" onclick="clearSelection()">✕ Clear</button>
+      <div style="flex:1"></div>
+      <button class="btn btl bsm" onclick="selectAllTasks()">Select All</button>
+      <button class="btn btl bsm" onclick="clearCompleted()">Clear Done</button>
+    </div>
+
+    <!-- Search & Sort toolbar -->
+    <div class="task-toolbar" role="search">
+      <input class="fi" id="tsearch" placeholder="🔍 Search tasks…" oninput="renderTasks()" aria-label="Search tasks" style="flex:1;min-width:160px">
+      <select class="fs" id="tfilter" onchange="renderTasks()" aria-label="Filter by priority" style="width:130px">
+        <option value="all">All priorities</option>
+        <option value="high">🔴 High</option>
+        <option value="med">🟡 Med</option>
+        <option value="low">🟢 Low</option>
+      </select>
+      <select class="fs" id="ttagfilter" onchange="renderTasks()" aria-label="Filter by tag" style="width:120px">
+        <option value="all">All tags</option>
+        <option value="urgent">urgent</option>
+        <option value="revision">revision</option>
+        <option value="exam">exam</option>
+        <option value="homework">homework</option>
+        <option value="project">project</option>
+      </select>
+      <button class="btn btl bsm" onclick="exportCalendar()" title="Export tasks to calendar (ICS)">📅 Export ICS</button>
+    </div>
+    <div class="sort-row" style="margin-bottom:16px">
+      <span style="font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-right:4px">Sort:</span>
+      <button class="sort-btn active" data-sort="created" onclick="setSortMode('created')">Recent</button>
+      <button class="sort-btn" data-sort="priority" onclick="setSortMode('priority')">Priority</button>
+      <button class="sort-btn" data-sort="due" onclick="setSortMode('due')">Due Date</button>
+      <button class="sort-btn" data-sort="name" onclick="setSortMode('name')">Name</button>
+    </div>
+
+    <div style="font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;font-weight:700">ACTIVE TASKS <span id="actcnt">(0)</span></div>
+    <div id="tlist"></div>
+    <div style="font-size:11px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin:24px 0 12px;font-weight:700">COMPLETED</div>
+    <div id="dlist"></div>
+  </main>
+
+  <!-- ══════════════ FOCUS ══════════════ -->
+  <main class="page" id="page-focus" aria-label="Focus">
+    <div class="g2" style="margin-bottom:22px">
+      <!-- POMODORO -->
+      <div class="gc gcp">
+        <div class="gct"><em>🍅</em> POMODORO TIMER</div>
+        <div class="pomo-ring-wrap">
+          <svg width="200" height="200" viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="12"/>
+            <circle id="pomo-ring" cx="100" cy="100" r="88" fill="none" stroke="url(#pomoGrad)" stroke-width="12" stroke-dasharray="553.0" stroke-dashoffset="553.0" stroke-linecap="round"/>
+            <defs><linearGradient id="pomoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C8A84B"/><stop offset="100%" stop-color="#F5DFA0"/></linearGradient></defs>
+          </svg>
+          <div class="pomo-disp">
+            <div class="pomo-time" id="pomo-disp">25:00</div>
+            <div style="font-size:8px;letter-spacing:2px;color:var(--text3);margin-top:2px" id="pomo-sub">DEEP FOCUS</div>
+            <div style="font-size:8px;letter-spacing:1px;color:var(--text3);margin-top:2px" id="pomo-phase">FOCUS · SESSION 1 OF 4</div>
+          </div>
+        </div>
+        <div class="pomo-dots" id="pomo-dots"></div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-top:16px">
+          <button class="btn bgh" id="pomo-play" onclick="togglePomo()" aria-label="Play/Pause pomodoro">▶</button>
+          <button class="btn btl" onclick="skipPomo()" aria-label="Skip pomodoro phase">⏭</button>
+          <button class="btn btl" onclick="resetPomo()" aria-label="Reset pomodoro">↺</button>
+        </div>
+        <!-- Custom settings -->
+        <div class="pomo-settings" style="margin-top:16px">
+          <div class="pomo-set-item"><label>Focus (min)</label><input class="fi" id="pomo-focus-min" type="number" value="25" min="1"></div>
+          <div class="pomo-set-item"><label>Break (min)</label><input class="fi" id="pomo-break-min" type="number" value="5" min="1"></div>
+          <div class="pomo-set-item"><label>Long Break</label><input class="fi" id="pomo-long-min" type="number" value="15" min="1"></div>
+          <div class="pomo-set-item"><label>Cycles</label><input class="fi" id="pomo-cycles-inp" type="number" value="4" min="1"></div>
+        </div>
+        <button class="btn bgh bsm" style="margin-top:10px;width:100%" onclick="applyPomoSettings()">Apply Settings</button>
+        <!-- Sound theme -->
+        <div style="margin-top:10px">
+          <div style="font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">Sound Theme</div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btl bsm pst-btn active" data-theme="chime" onclick="setPomoSound('chime')">🎵 Chime</button>
+            <button class="btn btl bsm pst-btn" data-theme="bell" onclick="setPomoSound('bell')">🔔 Bell</button>
+            <button class="btn btl bsm pst-btn" data-theme="ding" onclick="setPomoSound('ding')">✨ Ding</button>
+          </div>
+        </div>
+        <!-- Sound toggle -->
+        <div class="sound-toggle" onclick="toggleSound()" role="switch" aria-checked="false" aria-label="Toggle sound">
+          <div class="stog" id="stog-el"><div class="stog-knob"></div></div>
+          <span id="sound-lbl">Sound Off</span>
+        </div>
+      </div>
+      <!-- QUOTES -->
+      <div class="gc gcp">
+        <div class="gct"><em>💬</em> DAILY INSPIRATION</div>
+        <div style="padding:20px;border-radius:14px;background:linear-gradient(135deg,rgba(232,201,122,.05),rgba(232,201,122,.02));border:1px solid rgba(232,201,122,.12);min-height:100px;display:flex;flex-direction:column;justify-content:center;margin-bottom:16px">
+          <div id="qtxt" style="font-size:15px;font-style:italic;color:var(--text);line-height:1.7;margin-bottom:10px" class="fade-in"></div>
+          <div id="qauthor" style="font-size:12px;color:var(--gold3);font-family:'Fira Code',monospace" class="fade-in"></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <div class="qbtns">
+            <button class="qbtn" onclick="prevQuote()" aria-label="Previous quote">← Prev</button>
+            <button class="qbtn" id="qpausebtn" onclick="toggleQuotePause()">⏸ Pause</button>
+            <button class="qbtn" onclick="nextQuote()" aria-label="Next quote">Next →</button>
+          </div>
+          <div class="qcnt" id="qcnt">1 / 25</div>
+        </div>
+        <div class="qprog-wrap"><div id="qprogbar"></div></div>
+      </div>
+    </div>
+
+    <!-- Focus Button -->
+    <div style="text-align:center;margin-bottom:22px">
+      <button class="btn bdng" style="padding:16px 36px;font-size:15px" onclick="openDND()">🌙 Enter Full Focus Mode</button>
+    </div>
+  </main>
+
+  <!-- ══════════════ FLASHCARDS ══════════════ -->
+  <main class="page" id="page-flashcards" aria-label="Flashcards">
+    <div class="gc gcp" style="margin-bottom:22px">
+      <div class="gct"><em>🃏</em> CREATE DECK</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px">
+        <input class="fi" id="fc-deck-name" placeholder="Deck name (e.g. Algebra)…" aria-label="Deck name">
+        <select class="fs" id="fc-deck-sub" aria-label="Subject">
+          <option>Math</option><option>Science</option><option>English</option>
+          <option>History</option><option>CS</option><option>Art</option><option>Other</option>
+        </select>
+        <button class="btn bgh" onclick="addFlashcardDeck()">+ Create</button>
+      </div>
+    </div>
+    <div id="fc-list" style="display:flex;flex-direction:column;gap:16px"></div>
+  </main>
+
+  <!-- ══════════════ GRADES ══════════════ -->
+  <main class="page" id="page-grades" aria-label="Grade Tracker">
+    <div class="gc gcp" style="margin-bottom:22px">
+      <div class="gct"><em>📊</em> LOG A GRADE</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:10px;align-items:end">
+        <div>
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">Subject</div>
+          <select class="fs" id="gr-sub" aria-label="Subject">
+            <option>Math</option><option>Science</option><option>English</option>
+            <option>History</option><option>CS</option><option>Art</option><option>Other</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">Assessment</div>
+          <input class="fi" id="gr-name" placeholder="e.g. Midterm Exam" aria-label="Assessment name">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">Score / Max</div>
+          <div style="display:flex;gap:6px">
+            <input class="fi" id="gr-score" type="number" min="0" placeholder="Score" aria-label="Score" style="flex:1">
+            <input class="fi" id="gr-max" type="number" min="1" value="100" placeholder="100" aria-label="Max score" style="flex:1">
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">Date</div>
+          <input class="fi" id="gr-date" type="date" aria-label="Grade date">
+        </div>
+        <button class="btn bgh" onclick="addGrade()" aria-label="Log grade">Log</button>
+      </div>
+    </div>
+    <div class="gc gcp" style="margin-bottom:22px">
+      <div class="gct"><em>📈</em> AVERAGES BY SUBJECT</div>
+      <div id="grades-avg" style="display:flex;flex-wrap:wrap;gap:8px;min-height:24px"></div>
+    </div>
+    <div class="gc gcp">
+      <div class="gct"><em>📋</em> ALL GRADES</div>
+      <div id="grades-list"></div>
+    </div>
+  </main>
+
+  <!-- ══════════════ STATISTICS ══════════════ -->
+  <main class="page" id="page-stats" aria-label="Statistics">
+    <div class="g4" style="margin-bottom:22px">
+      <div class="stat-card"><div class="stat-v" id="st-done" style="color:var(--teal)">0</div><div class="stat-l">Tasks Done</div></div>
+      <div class="stat-card"><div class="stat-v" id="st-pending" style="color:var(--gold)">0</div><div class="stat-l">Pending</div></div>
+      <div class="stat-card"><div class="stat-v" id="st-rate" style="color:var(--violet)">0%</div><div class="stat-l">Completion Rate</div></div>
+      <div class="stat-card"><div class="stat-v" id="st-hrs" style="color:var(--rose)">0h</div><div class="stat-l">Study Hours</div></div>
+      <div class="stat-card"><div class="stat-v" id="st-xp" style="color:var(--gold)">0</div><div class="stat-l">Total XP</div></div>
+      <div class="stat-card"><div class="stat-v" id="st-streak" style="color:var(--rose)">0</div><div class="stat-l">Best Streak</div></div>
+      <div class="stat-card"><div class="stat-v" id="st-avgxp" style="color:var(--sky)">0</div><div class="stat-l">Avg XP/Day</div></div>
+      <div class="stat-card"><div class="stat-v" id="st-bestday" style="color:var(--violet)">—</div><div class="stat-l">Best Day</div></div>
+      <div class="stat-card"><div class="stat-v" id="st-mph" style="color:var(--sky)">—</div><div class="stat-l">Peak Hour</div></div>
+    </div>
+    <div class="g2" style="margin-bottom:22px">
+      <div class="gc gcp">
+        <div class="gct"><em>📚</em> BY SUBJECT</div>
+        <div id="stat-sub-bars"></div>
+      </div>
+      <div class="gc gcp">
+        <div class="gct"><em>🎯</em> BY PRIORITY</div>
+        <div id="stat-pri-bars"></div>
+        <div style="margin-top:16px">
+          <div class="gct" style="margin-bottom:8px"><em>👥</em> SOCIAL</div>
+          <div style="font-size:28px;font-family:'Playfair Display',serif;font-weight:900;color:var(--teal)" id="st-friends">0</div>
+          <div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase">Friends</div>
+        </div>
+      </div>
+    </div>
+    <div class="gc gcp">
+      <div class="gct"><em>📈</em> 30-DAY XP HISTORY</div>
+      <div id="stat-xp-30" style="display:flex;align-items:flex-end;gap:2px;height:64px;padding:0 4px"></div>
+    </div>
+  </main>
+
+  <!-- ══════════════ FRIENDS ══════════════ -->
+  <main class="page" id="page-friends" aria-label="Friends and Social">
+    <div class="g2" style="margin-bottom:22px">
+      <!-- Leaderboard -->
+      <div class="gc gcp">
+        <div class="gct"><em>🏆</em> LEADERBOARD</div>
+        <div style="display:flex;gap:8px;margin-bottom:16px">
+          <input class="fi" id="fname" placeholder="Friend's name…" aria-label="Friend name" style="flex:1" onkeydown="if(event.key==='Enter')addFriend()">
+          <button class="btn bgh" onclick="addFriend()">+ Add</button>
+        </div>
+        <div id="lblist"></div>
+      </div>
+      <!-- Challenges -->
+      <div class="gc gcp">
+        <div class="gct"><em>⚔️</em> CHALLENGES</div>
+        <div style="margin-bottom:16px">
+          <button class="btn bgh" onclick="openChallengeModal()" style="width:100%">⚔️ New Challenge</button>
+        </div>
+        <div id="chlist"></div>
+      </div>
+    </div>
+
+    <!-- Collab -->
+    <div class="gc gcp" style="margin-bottom:22px">
+      <div class="gct"><em>🤝</em> COLLABORATIVE TASKS</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <input class="fi" id="cname" placeholder="Collab task name…" aria-label="Collab task name" style="flex:1" onkeydown="if(event.key==='Enter')addCollab()">
+        <button class="btn bgh" onclick="addCollab()">+ Create</button>
+      </div>
+      <div id="clist"></div>
+    </div>
+
+    <!-- Achievements -->
+    <div class="gc gcp">
+      <div class="gct"><em>🏅</em> ACHIEVEMENTS</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <span style="font-size:13px;color:var(--text2)" id="ach-progress-txt">0 / 25 Unlocked</span>
+        <div class="ach-progress-bar-wrap" style="width:200px"><div class="ach-progress-bar-fill" id="ach-progress-bar" style="width:0%"></div></div>
+      </div>
+      <div id="achgrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px"></div>
+    </div>
+  </main>
+
+  <!-- ══════════════ NOTES ══════════════ -->
+  <main class="page" id="page-notes" aria-label="Study Notes">
+    <div class="gc gcp">
+      <div class="gct"><em>📝</em> STUDY NOTES</div>
+      <textarea class="notes-inp" id="study-notes-area" placeholder="Write your study notes here… Use this as your personal study journal, formula sheet, or anything you want to remember." oninput="saveNotes();updNotesStats()" aria-label="Study notes"></textarea>
+      <div id="md-preview" style="display:none;min-height:200px;padding:16px;background:rgba(255,255,255,.02);border:1px solid var(--rim);border-radius:10px;color:var(--text);line-height:1.7;font-size:14px"></div>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px;font-family:'Fira Code',monospace" id="notes-wordcount">0 words · 0 chars</div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btl bsm" onclick="clearNotes()" aria-label="Clear notes">🗑️ Clear</button>
+        <button class="btn btl bsm" id="md-toggle-btn" onclick="toggleMarkdownPreview()">👁 Preview</button>
+        <button class="btn btl bsm" onclick="exportData()" aria-label="Export data">📤 Export Data</button>
+        <button class="btn btl bsm" onclick="importData()" aria-label="Import data">📥 Import</button>
+        <input type="file" id="import-file" accept=".json" onchange="handleImport(event)" style="display:none" aria-label="Import file">
+      </div>
+    </div>
+  </main>
+
+  <!-- ══════════════ TIMETABLE ══════════════ -->
+  <main class="page" id="page-timetable" aria-label="Timetable">
+    <div class="gc gcp" style="margin-bottom:22px">
+      <div class="gct"><em>📅</em> ADD SCHEDULE SLOT</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:10px;align-items:end">
+        <div>
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">Day</div>
+          <select class="fs" id="tt-day" aria-label="Day">
+            <option>Mon</option><option>Tue</option><option>Wed</option>
+            <option>Thu</option><option>Fri</option><option>Sat</option><option>Sun</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">Hour</div>
+          <select class="fs" id="tt-hour" aria-label="Hour">
+            <option>7</option><option>8</option><option>9</option><option>10</option><option>11</option>
+            <option>12</option><option>13</option><option>14</option><option>15</option>
+            <option>16</option><option>17</option><option>18</option><option>19</option><option>20</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">Subject</div>
+          <input class="fi" id="tt-subj" placeholder="e.g. Math" aria-label="Subject">
+        </div>
+        <div>
+          <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px">Color</div>
+          <input class="fi" id="tt-color" type="color" value="#A78BFA" style="height:42px;padding:4px;cursor:pointer" aria-label="Color">
+        </div>
+        <button class="btn bgh" onclick="addTimetableSlot()" aria-label="Add timetable slot">+ Add</button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px">Click on a filled slot to remove it. Click an empty slot to pre-fill the form.</div>
+    </div>
+    <div class="gc gcp" style="overflow-x:auto">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <div class="gct" style="margin-bottom:0"><em>📆</em> WEEKLY SCHEDULE</div>
+        <button class="btn btl bsm" onclick="exportTimetable()">📅 Export ICS</button>
+      </div>
+      <div id="tt-grid"></div>
+    </div>
+  </main>
+
+  <!-- ══════════════ MODALS ══════════════ -->
+
+  <!-- Level Up -->
+  <div class="ov" id="luov" onclick="this.classList.remove('show')">
+    <div class="ov-box lu-box">
+      <div class="lu-em">🎓</div>
+      <div class="lu-title" id="lutit">LEVEL UP!</div>
+      <div class="lu-sub" id="lusub">New level reached!</div>
+      <button class="btn bgh" style="margin-top:20px;width:100%" onclick="document.getElementById('luov').classList.remove('show')">Continue ✦</button>
+    </div>
+  </div>
+
+  <!-- Task Timer -->
+  <div class="ov" id="tmov">
+    <div class="ov-box" style="max-width:360px;text-align:center">
+      <button class="ov-close" onclick="closeTM()">✕ Close</button>
+      <div style="font-size:13px;font-weight:600;margin-bottom:20px;color:var(--text2)" id="tmnm">📌 Task</div>
+      <div class="tm-ring-wrap">
+        <svg width="180" height="180" viewBox="0 0 180 180">
+          <circle cx="90" cy="90" r="80" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="10"/>
+          <circle id="tmring" cx="90" cy="90" r="80" fill="none" stroke="url(#tmGrad)" stroke-width="10" stroke-dasharray="603.19" stroke-dashoffset="603.19" stroke-linecap="round"/>
+          <defs><linearGradient id="tmGrad"><stop offset="0%" stop-color="#C8A84B"/><stop offset="100%" stop-color="#F5DFA0"/></linearGradient></defs>
+        </svg>
+        <div class="tm-disp" id="tmdisp">00:00</div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:16px">
+        <button class="btn bgh" id="tmplay" onclick="toggleTM()">▶ Start</button>
+        <button class="btn btl" onclick="resetTM()">↺ Reset</button>
+        <button class="btn btl" onclick="closeTM()">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Task -->
+  <div class="ov" id="edit-ov">
+    <div class="ov-box" style="max-width:480px">
+      <button class="ov-close" onclick="document.getElementById('edit-ov').classList.remove('open')">✕</button>
+      <div class="gct"><em>✏️</em> EDIT TASK</div>
+      <input type="hidden" id="edit-id">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <input class="fi" id="edit-name" placeholder="Task name" aria-label="Task name">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <select class="fs" id="edit-sub" aria-label="Subject">
+            <option>Math</option><option>Science</option><option>English</option>
+            <option>History</option><option>Art</option><option>CS</option><option>Other</option>
+          </select>
+          <select class="fs" id="edit-pri" aria-label="Priority">
+            <option value="high">🔴 High</option>
+            <option value="med">🟡 Medium</option>
+            <option value="low">🟢 Low</option>
+          </select>
+        </div>
+        <select class="fs" id="edit-recur" aria-label="Recurring">
+          <option value="none">No repeat</option>
+          <option value="daily">🔁 Daily</option>
+          <option value="weekly">🔁 Weekly</option>
+          <option value="monthly">🔁 Monthly</option>
+        </select>
+        <input class="fi" id="edit-due" type="date" aria-label="Due date">
+        <div class="dur-row">
+          <input class="fi" id="edit-hr" type="number" min="0" placeholder="h" aria-label="Hours">
+          <input class="fi" id="edit-mn" type="number" min="0" max="59" placeholder="m" aria-label="Minutes">
+          <input class="fi" id="edit-sc" type="number" min="0" max="59" placeholder="s" aria-label="Seconds">
+        </div>
+        <input class="fi" id="edit-notes" placeholder="Notes" aria-label="Task notes">
+        <input class="fi" id="edit-tags" placeholder="Tags (comma-separated)" aria-label="Task tags">
+        <button class="btn bgh" onclick="saveEditTask()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile -->
+  <div class="ov" id="profile-ov">
+    <div class="ov-box">
+      <button class="ov-close" onclick="document.getElementById('profile-ov').classList.remove('open')">✕</button>
+      <div class="profile-av-big" id="prof-av-big">?</div>
+      <div class="profile-name-edit">
+        <div style="display:flex;gap:8px;justify-content:center">
+          <input class="fi" id="prof-name-inp" style="max-width:200px;text-align:center" placeholder="Your name" aria-label="Profile name">
+          <button class="btn bgh bsm" onclick="saveProfileName()">Save</button>
+        </div>
+      </div>
+      <div class="profile-stat-grid">
+        <div class="pscard"><div class="pscard-v" id="ps-xp">0</div><div class="pscard-l">Total XP</div></div>
+        <div class="pscard"><div class="pscard-v" id="ps-lvl">1</div><div class="pscard-l">Level</div></div>
+        <div class="pscard"><div class="pscard-v" id="ps-done">0</div><div class="pscard-l">Completed</div></div>
+        <div class="pscard"><div class="pscard-v" id="ps-str">0</div><div class="pscard-l">Best Streak</div></div>
+        <div class="pscard"><div class="pscard-v" id="ps-time">0m</div><div class="pscard-l">Study Time</div></div>
+        <div class="pscard"><div class="pscard-v" id="ps-ach">0</div><div class="pscard-l">Achievements</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings -->
+  <div class="ov" id="settings-ov">
+    <div class="ov-box" style="max-width:560px">
+      <button class="ov-close" onclick="closeSettings()">✕ Close</button>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:24px">⚙️ Settings</div>
+
+      <div class="set-section">
+        <div class="set-section-title">Appearance</div>
+        <div class="set-row">
+          <span>Theme</span>
+          <button class="btn btl bsm" id="theme-btn2" onclick="toggleTheme()">Toggle Light/Dark</button>
+        </div>
+      </div>
+
+      <div class="set-section">
+        <div class="set-section-title">Daily Goals</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px">
+          <div><label style="font-size:11px;color:var(--text3)">Tasks/day</label><input class="fi" id="dg-set-tasks" type="number" value="5" min="1"></div>
+          <div><label style="font-size:11px;color:var(--text3)">XP/day</label><input class="fi" id="dg-set-xp" type="number" value="50" min="1"></div>
+          <div><label style="font-size:11px;color:var(--text3)">Study min/day</label><input class="fi" id="dg-set-study" type="number" value="60" min="1"></div>
+        </div>
+        <button class="btn bgh bsm" onclick="saveDailyGoal()">Save Goals</button>
+      </div>
+
+      <div class="set-section">
+        <div class="set-section-title">Notifications</div>
+        <div class="set-row">
+          <span>Browser push notifications</span>
+          <button class="btn btl bsm" onclick="sendTestNotif()">🔔 Test Notification</button>
+        </div>
+      </div>
+
+      <div class="set-section">
+        <div class="set-section-title">Data</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btl bsm" onclick="exportData()">📤 Export JSON</button>
+          <button class="btn btl bsm" onclick="importData()">📥 Import JSON</button>
+          <button class="btn btl bsm" onclick="exportCalendar()">📅 Export ICS</button>
+          <button class="btn bsm" style="background:rgba(251,113,133,.08);color:var(--rose);border:1px solid rgba(251,113,133,.2)" onclick="resetAllData()">🗑️ Reset All</button>
+        </div>
+      </div>
+
+      <div class="set-section">
+        <div class="set-section-title">Keyboard Shortcuts</div>
+        <div class="set-row"><span>Open Settings</span><span class="set-key">?</span></div>
+        <div class="set-row"><span>Close modal</span><span class="set-key">Esc</span></div>
+        <div class="set-row"><span>Search tasks</span><span class="set-key">Ctrl+F</span></div>
+      </div>
+
+      <div class="set-section">
+        <div class="set-section-title">Profiles</div>
+        <div id="profiles-list" style="margin-bottom:12px"></div>
+        <div style="display:flex;gap:8px">
+          <input class="fi" id="new-profile-name" placeholder="New profile name…" aria-label="New profile name" style="flex:1">
+          <button class="btn bgh bsm" onclick="addProfile()">+ Add Profile</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily Goal Set Modal -->
+  <div class="ov" id="dg-set-ov">
+    <div class="ov-box" style="max-width:380px">
+      <button class="ov-close" onclick="document.getElementById('dg-set-ov').classList.remove('open')">✕</button>
+      <div class="gct"><em>🎯</em> SET DAILY GOALS</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div><label class="ob-label">Tasks per day</label><input class="fi" id="dg-m-tasks" type="number" value="5" min="1"></div>
+        <div><label class="ob-label">XP per day</label><input class="fi" id="dg-m-xp" type="number" value="50" min="1"></div>
+        <div><label class="ob-label">Study minutes per day</label><input class="fi" id="dg-m-study" type="number" value="60" min="1"></div>
+        <button class="btn bgh" onclick="S.dailyGoal={tasks:parseInt(document.getElementById('dg-m-tasks').value)||5,xp:parseInt(document.getElementById('dg-m-xp').value)||50,studyMins:parseInt(document.getElementById('dg-m-study').value)||60};scheduleSave();renderDailyGoalBar();document.getElementById('dg-set-ov').classList.remove('open');toast('🎯','Goals updated!','tgo')">Save Goals</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Flashcard Quiz -->
+  <div class="ov" id="flash-quiz-ov">
+    <div class="ov-box" style="max-width:440px;text-align:center">
+      <button class="ov-close" onclick="document.getElementById('flash-quiz-ov').classList.remove('open');flashMode=null">✕</button>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:600;color:var(--text2)" id="fq-deck">Deck</div>
+        <div style="font-size:11px;color:var(--text3);font-family:'Fira Code',monospace" id="fq-cnt">1/10</div>
+      </div>
+      <div class="fq-scene" onclick="flipCard()">
+        <div class="fq-card-inner" id="fq-card">
+          <div class="fq-front"><div id="fq-front">Question</div></div>
+          <div class="fq-back"><div id="fq-back">Answer</div></div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin:8px 0 16px">Tap card to flip</div>
+      <div class="fq-rating">
+        <button class="fq-btn" style="background:rgba(251,113,133,.1);color:var(--rose);border-color:rgba(251,113,133,.2)" onclick="rateCard(1)">😕 Hard</button>
+        <button class="fq-btn" style="background:rgba(232,201,122,.1);color:var(--gold);border-color:rgba(232,201,122,.2)" onclick="rateCard(3)">🤔 OK</button>
+        <button class="fq-btn" style="background:rgba(45,212,191,.1);color:var(--teal);border-color:rgba(45,212,191,.2)" onclick="rateCard(5)">✅ Easy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DND FOCUS MODE -->
+  <div id="dnd" role="dialog" aria-label="Focus mode" aria-modal="true">
+    <div id="dstars"></div>
+    <div class="dnd-head">
+      <div class="dswitch">
+        <button class="dsw active" id="dswc" onclick="dndSw('clock')" aria-label="Clock mode">Clock</button>
+        <button class="dsw" id="dswt" onclick="dndSw('timer')" aria-label="Timer mode">Timer</button>
+        <button class="dsw" id="dswp" onclick="dndSw('pomo')" aria-label="Pomodoro mode">Pomo</button>
+      </div>
+      <button class="btn btl bsm" onclick="closeDND()" aria-label="Exit focus mode">✕ Exit</button>
+    </div>
+
+    <!-- Clock view -->
+    <div id="dclkv" style="text-align:center">
+      <div class="dbclock" id="dclk">00:00:00</div>
+      <div class="dclkdt" id="ddt"></div>
+    </div>
+
+    <!-- Timer view -->
+    <div id="dtmrv" style="display:none;text-align:center">
+      <div class="dring-wrap">
+        <svg width="220" height="220" viewBox="0 0 220 220">
+          <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="12"/>
+          <circle id="dring" cx="110" cy="110" r="100" fill="none" stroke="rgba(167,139,250,.5)" stroke-width="12" stroke-dasharray="628.32" stroke-dashoffset="628.32" stroke-linecap="round"/>
+        </svg>
+        <div class="dbigt" id="dbigt">25:00</div>
+      </div>
+    </div>
+
+    <!-- Timer controls -->
+    <div id="dsetrow" style="display:none;gap:8px;justify-content:center;margin-top:16px">
+      <input id="dnh" type="number" min="0" max="23" placeholder="h" class="fi" style="width:56px;text-align:center;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#fff" aria-label="Hours">
+      <input id="dnm" type="number" min="0" max="59" placeholder="m" class="fi" style="width:56px;text-align:center;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#fff" aria-label="Minutes">
+      <input id="dns" type="number" min="0" max="59" placeholder="s" class="fi" style="width:56px;text-align:center;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15);color:#fff" aria-label="Seconds">
+      <button class="btn" style="background:rgba(167,139,250,.15);color:var(--violet);border:1px solid rgba(167,139,250,.3)" onclick="setDT()">Set</button>
+    </div>
+    <div id="dctrls" style="display:none;gap:10px;justify-content:center;margin-top:12px">
+      <button class="btn" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)" id="dplay" onclick="toggleDT()" aria-label="Play/Pause timer">▶</button>
+      <button class="btn" style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.1)" onclick="resetDT()" aria-label="Reset timer">↺</button>
+      <button class="btn" style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.1)" onclick="addDTMin(5)" aria-label="Add 5 minutes">+5m</button>
+    </div>
+
+    <!-- Pomodoro in DND -->
+    <div id="dndpomov" style="display:none;text-align:center">
+      <div style="font-family:'Playfair Display',serif;font-size:64px;font-weight:900;color:#fff" id="pomo-disp-dnd">25:00</div>
+    </div>
+    <div id="dnd-pomo-ctrls" style="display:none;gap:10px;justify-content:center;margin-top:16px">
+      <button class="btn" style="background:rgba(232,201,122,.1);color:var(--gold);border:1px solid rgba(232,201,122,.2)" onclick="togglePomo();document.getElementById('pomo-disp-dnd').textContent=document.getElementById('pomo-disp').textContent">▶ / ⏸</button>
+    </div>
+
+    <!-- Motivational message -->
+    <div id="dnd-motivate" style="position:absolute;top:20px;left:50%;transform:translateX(-50%);font-size:12px;color:rgba(255,255,255,.3);font-style:italic;text-align:center;max-width:300px;letter-spacing:.3px;transition:opacity .5s;white-space:normal"></div>
+
+    <!-- Ambient sound buttons -->
+    <div class="dnd-ambient">
+      <div style="font-size:11px;color:rgba(255,255,255,.3);letter-spacing:2px;text-transform:uppercase;width:100%;text-align:center;margin-bottom:4px">Ambient Sounds</div>
+      <button class="amb-btn" onclick="playAmbient('rain')">🌧️ Rain</button>
+      <button class="amb-btn" onclick="playAmbient('white')">🌊 White Noise</button>
+      <button class="amb-btn" onclick="playAmbient('forest')">🌿 Forest</button>
+      <button class="amb-btn" onclick="stopAmbient()">⏹ Stop</button>
+    </div>
+
+    <!-- Sound toggle in DND -->
+    <div style="position:absolute;bottom:24px;left:28px;display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.4);font-size:12px;cursor:pointer" onclick="toggleSound()">
+      <div class="stog" id="stog-dnd"><div class="stog-knob"></div></div>
+      <span id="sound-lbl-dnd">Sound Off</span>
+    </div>
+  </div>
+
+  <!-- Challenge Modal -->
+  <div class="ov" id="challenge-ov">
+    <div class="ov-box" style="max-width:460px">
+      <button class="ov-close" onclick="document.getElementById('challenge-ov').classList.remove('open')">✕</button>
+      <div class="gct"><em>⚔️</em> NEW CHALLENGE</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <input class="fi" id="ch-name" placeholder="Challenge name…" aria-label="Challenge name">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <select class="fs" id="ch-friend" aria-label="Friend to challenge">
+            <option disabled selected>Select friend…</option>
+          </select>
+          <select class="fs" id="ch-type" aria-label="Challenge type">
+            <option value="tasks">Tasks completed</option>
+            <option value="xp">XP earned</option>
+            <option value="streak">Streak days</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span style="font-size:12px;color:var(--text2)">Goal:</span>
+          <input class="fi" id="ch-goal" type="number" value="5" min="1" style="width:90px" aria-label="Challenge goal">
+        </div>
+        <button class="btn bgh" onclick="createChallenge()">⚔️ Start Challenge!</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+  <!-- FAB Quick Add -->
+  <div id="fab-wrap" style="position:fixed;bottom:80px;right:20px;z-index:200;display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+    <div id="fab-menu" class="fab-menu-panel" style="display:flex;flex-direction:column;gap:6px;transition:opacity .2s,transform .2s">
+      <button class="fab-item" onclick="fabAddTask()">📌 Add Task</button>
+      <button class="fab-item" onclick="fabOpenPomo()">🍅 Pomodoro</button>
+      <button class="fab-item" onclick="fabOpenDND()">🌙 Focus Mode</button>
+    </div>
+    <button class="fab-btn" onclick="toggleFAB()" aria-label="Quick actions"><span id="fab-btn-icon">＋</span></button>
+  </div>
+
+<script src="app.js"></script>
+</body>
+</html>
